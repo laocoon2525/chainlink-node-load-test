@@ -13,13 +13,12 @@ trait Jobs extends Authenticated {
   val JobIdsFileEnvVariable = "JOB_IDS_FILE"
 
    def allJobIds: HttpRequestBuilder = {
-    addAuthenticationHeader(
       http("jobs")
         .get(JobsEndPoint)
+        .header("Cookie", sessionToken)
         .check(
           status.is(200),
           jsonPath("$.data[*].id").findAll.saveAs(JobIdsSessionKey)
         )
-    )
   }
 }

@@ -7,12 +7,23 @@
  */
 
 plugins {
-    // Apply the scala Plugin to add support for Scala.
-    id 'scala'
-
-    // // Apply the application plugin to add support for building a CLI application in Java.
-    // id 'application'
-
     id "io.gatling.gradle" version "3.7.6.3"
+}
 
+def chainLinkHost = System.getenv("CHAIN_LINK_HOST") ?: "localhost"
+def chainLinkPort = System.getenv("CHAIN_LINK_PORT") ?: "6688"
+def chainLinkHttpProtocol = System.getenv("CHAIN_LINK_HTPP_PROTOCOL") ?: "http"
+def chainLinkServerUrl = chainLinkHttpProtocol+'://'+chainLinkHost+':'+chainLinkPort
+
+tasks.addRule('Set variables for the test to run') { String taskName ->
+    if(taskName.startsWith('gatlingRun')) {
+        System.setProperty("___chainLinkServerURL", chainLinkServerUrl)
+
+        def req = new URL(chainLinkServerUrl+'/sessions').openConnection()
+        req.setRequestMethod("POST")
+        req.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+        req.setDoOutput(true)
+        req.getOutputStream().write(('{"email":"'+System.env.ADMIN_USER+'","password":"'+System.env.ADMIN_PASSWORD+'"}').getBytes())
+        System.setProperty("___sessionToken", req.getHeaderField('Set-Cookie'))
+    }
 }

@@ -36,6 +36,13 @@ finally you can run the jobs by calling
 
 This simulation uses all the job ids specified in the `JOB_IDS_FILE` csv file.
 
+
+### VRF
+simulating how many concurrent VRF request per second can be processed
+```bash
+./gradlew gatlingRun-chainlink.node.load.test.VRFSimulation
+```
+
 You can change the number of users running the test by specifying 
 ```bash
 export USERS_COUNT=<users count>
